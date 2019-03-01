@@ -1,56 +1,65 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:face_camera/face_camera.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
+main() async {
+  await _initVideoPlugin();
+  runApp(new MyApp());
 }
 
-class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+final MethodChannel _channel = const MethodChannel('flutter.io/SurfaceTest');
+int _textureId;
 
-  @override
-  void initState() {
-    super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await FaceCamera.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
-      ),
+    return new MaterialApp(
+      title: 'Test',
+      home: new Scaffold(
+          body: Column(
+        children: <Widget>[
+          AspectRatio(child: new VideoView(), aspectRatio: 4 / 3),
+          Expanded(
+              child: Center(
+                  child: new FlatButton(
+                      padding: EdgeInsets.only(
+                        left: 25.0, 
+                        right: 25.0, 
+                        top: 15.0, 
+                        bottom: 15.0
+                      ),
+                      onPressed: _render,
+                      child: new Text("render"))))
+        ],
+      )
+          ),
     );
+  }
+}
+
+Future<void> _render() async {
+  _channel.invokeMethod(
+    'render',
+    <String, dynamic>{},
+  );
+}
+
+class VideoView extends StatefulWidget {
+  @override
+  State createState() {
+    return new VideoState();
+  }
+}
+
+_initVideoPlugin() async {
+  final Map<dynamic, dynamic> response = await _channel.invokeMethod('init');
+  _textureId = response['textureId'];
+}
+
+class VideoState extends State<VideoView> {
+  @override
+  Widget build(BuildContext context) {
+    return new Texture(textureId: _textureId);
   }
 }

@@ -20,15 +20,21 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 23
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         disable 'InvalidPackage'
+    }
+    dependencies {
+        implementation 'com.google.firebase:firebase-core:16.+'
+        implementation 'com.google.firebase:firebase-ml-vision:19.+'
+        implementation 'com.google.firebase:firebase-ml-vision-face-model:17.+'
     }
 }

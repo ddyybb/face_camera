@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "898481918942",
+    "firebase_url": "https://camobile-ios-2.firebaseio.com",
+    "project_id": "camobile-ios-2",
+    "storage_bucket": "camobile-ios-2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:898481918942:android:1051301114ad2628",
+        "android_client_info": {
+          "package_name": "com.me.dimabaranov.face_camera"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "898481918942-s9s1t1ancn40jr6i0ftagkds8ogm73s4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF13ACpI_ziO1PO43Foy5CYXLpj0gjJ34"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
