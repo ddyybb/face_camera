@@ -1,6 +1,6 @@
 # face_camera
 
-A new flutter plugin project.
+Flutter camera plugin with Firebase ML face detection support
 
 ## Getting Started
 
