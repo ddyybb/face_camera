@@ -22,8 +22,6 @@ class FDCam {
         //cameraName: String?,
         //resolutionPreset: String?
     ) throws {
-        let resolutionPreset = "medium"
-        
         // getting camera name
         let discoverySession = AVCaptureDevice.DiscoverySession(
             deviceTypes: [
@@ -42,20 +40,24 @@ class FDCam {
         
         captureSession = AVCaptureSession()
         captureSession.beginConfiguration()
-        
-        switch resolutionPreset {
-        case "high":
-            captureSession.sessionPreset = .hd1280x720
-            previewSize = CGSize(width: 1280, height: 720)
-        case "medium":
-            captureSession.sessionPreset = .vga640x480
-            previewSize = CGSize(width: 640, height: 480)
-        default:
-            captureSession.sessionPreset = .cif352x288
-            previewSize = CGSize(width: 352, height: 288)
-        }
-        
+
+//        let resolutionPreset = "high"
+//
+//        switch resolutionPreset {
+//        case "high":
+//            captureSession.sessionPreset = .hd1280x720
+//            previewSize = CGSize(width: 1280, height: 720)
+//        case "medium":
+//            captureSession.sessionPreset = .vga640x480
+//            previewSize = CGSize(width: 640, height: 480)
+//        default:
+//            captureSession.sessionPreset = .cif352x288
+//            previewSize = CGSize(width: 352, height: 288)
+//        }
+
         captureSession.sessionPreset = .high
+        //previewSize = CGSize(width: 640, height: 360)
+        previewSize = CGSize(width: 1280, height: 720)
         
         // Configure Input
         
@@ -133,6 +135,13 @@ class FDCam {
     func stop() {
         sessionQueue.async {
             self.captureSession.stopRunning()
+        }
+    }
+
+    func savePreview() {
+        if let image = texture.getImage() {
+            let img = UIImage(cgImage: image)
+            UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
         }
     }
 }

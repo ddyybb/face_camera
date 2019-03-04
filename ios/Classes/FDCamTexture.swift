@@ -17,7 +17,9 @@ class FDCamTexture:
     AVCaptureVideoDataOutputSampleBufferDelegate,
     FlutterTexture
 {
+    private var lastFaceRect: CGRect?
     private var lastFrame: CMSampleBuffer?
+    private var faceFillColor: CGColor?
     var onFrameAvailable: (() -> Void)?
     var faces: [VisionFace] = []
     
@@ -39,7 +41,7 @@ class FDCamTexture:
         _ output: AVCaptureOutput,
         didOutput buffer: CMSampleBuffer,
         from connection: AVCaptureConnection
-        ) {
+    ) {
         var sampleBuffer: CMSampleBuffer!
         
         CMSampleBufferCreateCopy(kCFAllocatorDefault, buffer, &sampleBuffer)
@@ -73,8 +75,8 @@ class FDCamTexture:
         guard
             let sampleBuffer = lastFrame,
             let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
-            else {
-                return nil
+        else {
+            return nil
         }
         
         let paintedBuffer = draw(in: pixelBuffer)
@@ -86,27 +88,59 @@ class FDCamTexture:
         context: CGContext,
         face: VisionFace,
         transform: CGAffineTransform
-        ) {
+    ) {
         guard
             let top = face.contour(ofType: .upperLipBottom)?.points,
             let bottom = face.contour(ofType: .lowerLipTop)?.points
             else {
                 return
         }
-        
+
+        var path: UIBezierPath?
+
         (top + bottom).forEach { (point) in
+            let p = CGPoint(
+                x: point.x.intValue,
+                y: point.y.intValue
+            )
+
+            if path == nil {
+                path = UIBezierPath()
+                path?.move(to: p)
+            } else {
+                path?.addLine(to: p)
+            }
+
             let rect = CGRect(
-                origin: CGPoint(
-                    x: point.x.intValue,
-                    y: point.y.intValue
-                ),
+                origin: p,
                 size: CGSize(
                     width: 5,
                     height: 5
                 )
-                ).applying(transform)
+            ).applying(transform)
             
             context.fillEllipse(in: rect)
+        }
+
+        path?.close()
+
+        lastFaceRect = path?.bounds
+
+        guard
+            let width = lastFaceRect?.width,
+            let height = lastFaceRect?.height
+        else {
+            return
+        }
+
+        print(width, height)
+
+        if width < 400 || height < 200 {
+            faceFillColor = UIColor.white.cgColor
+        } else if width > 420 || height > 220 {
+            faceFillColor = UIColor.red.cgColor
+        } else {
+            faceFillColor = UIColor.green.cgColor
         }
     }
     
@@ -116,13 +150,13 @@ class FDCamTexture:
         let transform = CGAffineTransform(
             translationX: 0,
             y: CGFloat(imageHeight)
-            ).scaledBy(
-                x: 1.0,
-                y: -1.0
+        ).scaledBy(
+            x: 1.0,
+            y: -1.0
         )
         
         CVPixelBufferLockBaseAddress( pixelBuffer, .readOnly)
-        let pixelData = CVPixelBufferGetBaseAddress( pixelBuffer)
+        let pixelData = CVPixelBufferGetBaseAddress(pixelBuffer)
         
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         
@@ -134,18 +168,20 @@ class FDCamTexture:
             bytesPerRow: 4 * imageWidth,
             space: colorSpace,
             bitmapInfo: CGImageAlphaInfo.noneSkipFirst.rawValue
-            ) {
+        ) {
             UIGraphicsPushContext(context)
             context.saveGState()
             
             if let face = faces.first {
                 drawLips(context: context, face: face, transform: transform)
             }
+
+            //context.path
             
             UIGraphicsPopContext()
         }
         
-        CVPixelBufferUnlockBaseAddress( pixelBuffer, .readOnly);
+        CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly);
         
         return pixelBuffer
     }
@@ -154,7 +190,7 @@ class FDCamTexture:
         in image: VisionImage,
         width: CGFloat,
         height: CGFloat
-        ) {
+    ) {
         var detectedFaces: [VisionFace]? = nil
         print(width)
         print(height)
@@ -170,5 +206,41 @@ class FDCamTexture:
         }
         
         self.faces = faces
+    }
+
+    func getImage() -> CGImage? {
+        guard
+            let frame = lastFrame,
+            let imageBuffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(frame)
+        else {
+            return nil
+        }
+
+        if CVPixelBufferLockBaseAddress(imageBuffer, .readOnly) != kCVReturnSuccess {
+            return nil
+        }
+
+        defer {
+            CVPixelBufferUnlockBaseAddress(imageBuffer, .readOnly)
+        }
+
+        guard let context = CGContext(
+            data: CVPixelBufferGetBaseAddress(imageBuffer),
+            width: CVPixelBufferGetWidth(imageBuffer),
+            height: CVPixelBufferGetHeight(imageBuffer),
+            bitsPerComponent: 8,
+            bytesPerRow: CVPixelBufferGetBytesPerRow(imageBuffer),
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGBitmapInfo.byteOrder32Little.rawValue
+                | CGImageAlphaInfo.premultipliedFirst.rawValue
+        ) else {
+            return nil
+        }
+
+        guard let rect = lastFaceRect else {
+            return nil
+        }
+
+        return context.makeImage()?.cropping(to: rect)
     }
 }

@@ -24,17 +24,17 @@ public class SwiftFaceCameraPlugin: NSObject, FlutterPlugin {
         _ call: FlutterMethodCall,
         result: @escaping FlutterResult
     ) {
-        let arguments = call.arguments as? [String: String]
+        //let arguments = call.arguments as? [String: String]
         
         switch call.method {
         case "init":
             do {
-                self.camera = try FDCam(
+                camera = try FDCam(
                     //cameraName: arguments?["cameraName"],
                     //resolutionPreset: arguments?["resolutionPreset"]
                 )
                 
-                self.initializeCamera(result: result)
+                initializeCamera(result: result)
             } catch let error {
                 result(FlutterError(
                     code: "fdcam.camera.initialize",
@@ -42,7 +42,10 @@ public class SwiftFaceCameraPlugin: NSObject, FlutterPlugin {
                     details: nil
                 ))
             }
-            
+
+        case "save":
+            camera?.savePreview()
+
         default:
             result(FlutterMethodNotImplemented)
         }

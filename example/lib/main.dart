@@ -16,31 +16,36 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Test',
-      home: new Scaffold(
-          body: Column(
+      home: new Stack(
+        fit: StackFit.expand,
         children: <Widget>[
-          AspectRatio(child: new VideoView(), aspectRatio: 4 / 3),
-          Expanded(
-              child: Center(
-                  child: new FlatButton(
-                      padding: EdgeInsets.only(
-                        left: 25.0, 
-                        right: 25.0, 
-                        top: 15.0, 
-                        bottom: 15.0
-                      ),
-                      onPressed: _render,
-                      child: new Text("render"))))
-        ],
-      )
-          ),
+          AspectRatio(
+            child: new VideoView(), 
+            aspectRatio: 9/16
+          ),          
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: new FlatButton(
+              color: Colors.white,
+              padding: EdgeInsets.only(
+                left: 25.0, 
+                right: 25.0, 
+                top: 15.0, 
+                bottom: 15.0
+              ),
+              onPressed: _render,
+              child: new Text("Сделать фото")
+            )
+          )          
+        ]
+      )       
     );
   }
 }
 
 Future<void> _render() async {
   _channel.invokeMethod(
-    'render',
+    'save',
     <String, dynamic>{},
   );
 }
