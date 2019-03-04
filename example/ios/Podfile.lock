@@ -126,7 +126,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/flutter/ios"
 
 SPEC CHECKSUMS:
-  face_camera: 4fcd7f0aadf09976fc2dbbfc56110575c7b2d0f4
+  face_camera: 7c01bfc785a1deb8665622a36593b6cab34aef05
   Firebase: 59d557e064217fab6a03ff00baa73c06e73832e6
   FirebaseAnalytics: 75e4bbc6417d190cc98ec1f17c41a4fad4c2c976
   FirebaseCore: c0c4befb82374d6aef64d800e569f47625352edc
@@ -134,7 +134,7 @@ SPEC CHECKSUMS:
   FirebaseMLCommon: d8a789e36a7faa175b1a5d1139e7fc7323c8db7b
   FirebaseMLVision: 07c0da3ceaa5ecde621528a985748d6098a84388
   FirebaseMLVisionFaceModel: 8c80355e22cfcf100ad2ac9c618536d19daf266b
-  Flutter: 9d0fac939486c9aba2809b7982dfdbb47a7b0296
+  Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
   GoogleAPIClientForREST: 5447a194eae517986cafe6421a5330b80b820591
   GoogleAppMeasurement: 008e04ecd8efedd97a693aea8634aefe220bd26e
   GoogleMobileVision: a1f93108b3527d67339e2de80e1db76645f9e8b9
@@ -144,6 +144,6 @@ SPEC CHECKSUMS:
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
   Protobuf: 1eb9700044745f00181c136ef21b8ff3ad5a0fd5
 
-PODFILE CHECKSUM: 8532063849c502503a6a4661648680654ed821e8
+PODFILE CHECKSUM: 98f6865b00c68e0262ba8ef394250097a9615aea
 
-COCOAPODS: 1.6.0.beta.1
+COCOAPODS: 1.6.0.beta.2
