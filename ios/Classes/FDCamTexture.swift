@@ -22,6 +22,9 @@ class FDCamTexture:
     private var faceFillColor: CGColor?
     var onFrameAvailable: (() -> Void)?
     var faces: [VisionFace] = []
+    var faceRect: CGRect? {
+        return lastFaceRect
+    }
     
     private lazy var faceDetector: VisionFaceDetector = {
         let options = VisionFaceDetectorOptions()
@@ -171,6 +174,10 @@ class FDCamTexture:
         ) {
             UIGraphicsPushContext(context)
             context.saveGState()
+            
+            if let color = faceFillColor {
+                context.setFillColor(color)
+            }
             
             if let face = faces.first {
                 drawLips(context: context, face: face, transform: transform)

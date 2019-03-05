@@ -17,6 +17,7 @@ class FDCam {
     private let captureVideoInput: AVCaptureInput
     private let captureVideoOutput: AVCaptureVideoDataOutput
     private let sessionQueue = DispatchQueue(label: "FDCamCaptureSessionQueue")
+    private let capturePhotoOutput: AVCapturePhotoOutput
     
     init?(
         //cameraName: String?,
@@ -123,6 +124,10 @@ class FDCam {
         
         captureSession.add(connection)
         
+        capturePhotoOutput = AVCapturePhotoOutput()
+        capturePhotoOutput.isHighResolutionCaptureEnabled = true
+        captureSession.addOutput(capturePhotoOutput)
+        
         captureSession.commitConfiguration()
     }
     
@@ -139,9 +144,19 @@ class FDCam {
     }
 
     func savePreview() {
-        if let image = texture.getImage() {
-            let img = UIImage(cgImage: image)
-            UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
+        if let rect = texture.faceRect {
+            let settings = AVCapturePhotoSettings()
+            settings.isHighResolutionPhotoEnabled = true
+            
+            capturePhotoOutput.capturePhoto(
+                with: settings,
+                delegate: SavePhotoDelegate(face: rect)
+            )
         }
+        
+//        if let image = texture.getImage() {
+//            let img = UIImage(cgImage: image)
+//            UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil)
+//        }
     }
 }
